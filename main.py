@@ -32,10 +32,27 @@ speed = 5
 isJump = False
 jumpCount = 10
 # Prizhok
-
 left = False
 rigth = False
 animCount = 0
+lastMove = "rigth"
+
+
+class snaryad():
+    def __init__(self, x, y, radius, color, facing):
+        self.x = x
+        self.y = y
+        self.radius = radius
+        self.color = color
+        self.facing = facing
+        self.vel = 8 * facing
+
+# Opisanie snaryada
+
+    def draw(self, win):
+        pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
+# Risovanie snaryada
+
 
 def drawWindow():
     global animCount # Ssilka na global peremennya
@@ -54,10 +71,15 @@ def drawWindow():
         win.blit(playerStand, (x, y))
     # Opisanie animation (risuem igroka)
 
+    for bullet in bullets:
+        bullet.draw(win)
+    # Zikl dlya risovaniya snaryadov
 
     pygame.display.update()  #Obnovlenie okna
 
 run = True
+bullets = []
+# Spisok dlya snaryada
 while run:
     # pygame.time.delay(30) #Vremya vipolneniya zikla (Skorost irgi)
     clock.tick(30)
@@ -67,15 +89,37 @@ while run:
             run = False
 # Proverka na zakritie okna
 
+
+    for bullet in bullets:
+        if bullet.x < 618 and bullet.x > 0:
+            bullet.x += bullet.vel
+        else:
+            bullets.pop(bullets.index(bullet))
+# Dvizhenie and delete snaryada
+
     keys = pygame.key.get_pressed()
+
+    if keys[pygame.K_f]:
+        if lastMove == "rigth":
+            facing = 1
+        else:
+            facing = -1
+        if len(bullets) < 100:
+            bullets.append(snaryad(round(x + width // 2), round(y + height // 2),
+            8, (255, 0, 0), facing))
+    # Opisanie strelbi snaryadami
+
+
     if keys[pygame.K_LEFT] and x > 5:
         x -= speed
         left = True
         rigth = False
+        lastMove = "left"
     elif keys[pygame.K_RIGHT] and x < 618 - width - 5:
         x += speed
         left = False
         rigth = True
+        lastMove = "rigth"
     else:
         left = False
         rigth = False
